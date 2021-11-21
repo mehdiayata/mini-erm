@@ -2,26 +2,53 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Repository\UserRepository;
+use App\Controller\RegistrationController;
+use ApiPlatform\Core\Annotation\ApiResource;
+use App\Doctrine\DataUserOwnedInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+#[ApiResource(
+    denormalizationContext: ['groups' => 'write:User'],
+    normalizationContext: ['groups' => 'read:User'],
+    collectionOperations: [
+        'registration' => [
+            'pagination_enabled' => false,
+            'path' => '/registration',
+            'method' => 'post',
+            'controller' => RegistrationController::class,
+            'read' => false,
+            'security' => 'is_granted("PUBLIC_ACCESS")'
+        ]
+    ],
+    itemOperations: [
+        'get' => [
+            'openapi_context' =>  [
+                'security' => [['bearerAuth' => []]]
+            ],
+        ]
+    ]
+)]
+class User implements UserInterface, PasswordAuthenticatedUserInterface, DataUserOwnedInterface
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Groups(['write:User'])]
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      */
+    #[Groups(['write:User'])]
     private $email;
 
     /**
@@ -33,11 +60,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
+    #[Groups(['write:User'])]
     private $password;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getEmail(): ?string
