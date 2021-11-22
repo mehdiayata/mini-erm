@@ -14,6 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 #[ApiResource(
     denormalizationContext: ['groups' => 'write:Transaction'],
+    normalizationContext: ['groups' => 'read:Transaction'],
     collectionOperations: [
         'transaction_provider' => [
             'path' => '/transactions/providers',
@@ -39,7 +40,9 @@ class Transaction
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * 
      */
+    #[Groups(['read:Transaction'])]
     private $id;
 
     /**
@@ -75,6 +78,7 @@ class Transaction
     /**
      * @ORM\Column(type="integer")
      */
+    #[Groups(['write:Transaction:Provider', 'write:Transaction:Client'])]
     private $quantity;
 
     public function getId(): ?int
