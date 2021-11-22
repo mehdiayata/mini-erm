@@ -18,7 +18,8 @@ class TransactionController extends AbstractController
 
     public function __invoke(Transaction $data, Request $request)
     {
-        if ($data->getProduct()->getTransaction() == NULL) {
+        if ($data->getProduct()->getTransaction()->getId() == NULL) {
+
             if ($request->getUri() == 'http://127.0.0.1:8000/api/transactions/clients') {
                 $data = $this->postTransactionClient($data);
             } else if ($request->getUri() == 'http://127.0.0.1:8000/api/transactions/providers') {
@@ -29,15 +30,17 @@ class TransactionController extends AbstractController
         } else {
             throw new \Exception('Impossible create new transaction for product');
         }
-
     }
 
     public function postTransactionProvider(Transaction $data)
     {
-        
-        $provider = $data->getProduct()->getProvider();
-        $data->setProvider($provider);
-        return $data;
+        if ($this->verifyBalance($data->getCompany(), $data->getProduct())) {
+            $provider = $data->getProduct()->getProvider();
+            $data->setProvider($provider);
+            return $data;
+        } else {
+            throw new \Exception("Your balance is not high enough for buy this product");
+        }
     }
 
     public function postTransactionClient(Transaction $data)
@@ -45,6 +48,20 @@ class TransactionController extends AbstractController
         $company = $data->getProduct()->getCompany();
         $data->setCompany($company);
         return $data;
+    }
+
+
+    public function verifyBalance($company, $product)
+    {
+        $balance = $company->getBalance();
+
+        $price = $product->getPrice() * $product->getTax();
+
+        if ($balance >= $price) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
