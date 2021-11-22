@@ -2,14 +2,37 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\TransactionRepository;
+use App\Entity\Product;
 use Doctrine\ORM\Mapping as ORM;
+use App\Controller\TransactionController;
+use App\Repository\TransactionRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=TransactionRepository::class)
  */
-#[ApiResource]
+#[ApiResource(
+    denormalizationContext: ['groups' => 'write:Transaction'],
+    collectionOperations: [
+        'transaction_provider' => [
+            'path' => '/transactions/providers',
+            'method' => 'post',
+            'controller' => TransactionController::class,
+            'read' => false,
+            'security' => 'is_granted("PUBLIC_ACCESS")',
+            'denormalization_context' => ['groups' => 'write:Transaction:Provider']
+        ],
+        'transaction_client' => [
+            'path' => '/transactions/clients',
+            'method' => 'post',
+            'controller' => TransactionController::class,
+            'read' => false,
+            'security' => 'is_granted("PUBLIC_ACCESS")',
+            'denormalization_context' => ['groups' => 'write:Transaction:Client']
+        ]
+    ],
+)]
 class Transaction
 {
     /**
@@ -22,6 +45,7 @@ class Transaction
     /**
      * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="transactions")
      */
+    #[Groups(['write:Transaction:Client'])]
     private $client;
 
     /**
@@ -32,17 +56,20 @@ class Transaction
     /**
      * @ORM\OneToOne(targetEntity=Product::class, mappedBy="transaction", cascade={"persist", "remove"})
      */
+    #[Groups(['write:Transaction:Provider', 'write:Transaction:Client'])]
     private $product;
 
     /**
      * @ORM\ManyToOne(targetEntity=Company::class, inversedBy="transactions")
      */
+    #[Groups('write:Transaction:Provider')]
     private $company;
 
     /**
      * @ORM\ManyToOne(targetEntity=Employee::class, inversedBy="transactions")
      * @ORM\JoinColumn(nullable=false)
      */
+    #[Groups(['write:Transaction:Provider', 'write:Transaction:Client'])]
     private $employee;
 
     public function getId(): ?int
