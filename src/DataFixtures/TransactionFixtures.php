@@ -53,6 +53,8 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
                 $transaction->setProvider($transaction->getProduct()->getProvider());
             }
 
+            $transaction->setQuantity($faker->numberBetween(1, $transaction->getProduct()->getStock()));
+
             $transaction->setEmployee($employees[$faker->numberBetween(0, count($employees) - 1)]);
 
             $manager->persist($transaction);
