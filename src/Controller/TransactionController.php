@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class TransactionController extends AbstractController
 {
 
-    public function __construct(private EntityManagerInterface $em, private ProductRepository $productRepository)
+    public function __construct()
     {
     }
 
