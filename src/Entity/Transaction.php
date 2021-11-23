@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     denormalizationContext: ['groups' => 'write:Transaction'],
     normalizationContext: ['groups' => 'read:Transaction'],
     collectionOperations: [
+        'get',
         'transaction_provider' => [
             'path' => '/transactions/providers',
             'method' => 'post',

@@ -25,7 +25,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             'controller' => RegistrationController::class,
             'read' => false,
             'security' => 'is_granted("PUBLIC_ACCESS")'
-        ]
+        ],
+        'get'
     ],
     itemOperations: [
         'get' => [
