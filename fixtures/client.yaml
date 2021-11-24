@@ -1,0 +1,6 @@
+# api/fixtures/books.yaml
+App\Entity\Client:
+    client_{1..6}:
+        name: '<firstName()> <lastName()>'
+        adress: <sentence(4)>
+        country: <sentence(1)>

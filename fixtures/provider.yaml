@@ -1,0 +1,6 @@
+# api/fixtures/books.yaml
+App\Entity\Provider:
+    provider_{1..6}:
+        name: '<name()>'
+        country: '<country()>'
+        adress: '<address()>'        

@@ -1,0 +1,10 @@
+# api/fixtures/books.yaml
+App\Entity\Transaction:
+    transaction{1..10}:
+        client: '@client_*'
+        provider: '@provider_*'
+        company: '@company_*'
+        employee: '@employee_*'
+        quantity: <numberBetween(0, 10)>
+        product: '@product_*'
+            

@@ -1,0 +1,6 @@
+# api/fixtures/books.yaml
+App\Entity\Company:
+    company_:{1..4}:
+        name: '<word()>'
+        country: '<country()>'
+        balance: '<numberBetween(25000, 300000)>'        

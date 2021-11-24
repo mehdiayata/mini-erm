@@ -1,0 +1,16 @@
+# api/fixtures/books.yaml
+App\Entity\Product:
+    product_{1..10}:
+        name: '<word()>'
+        price: <randomFloat(2, 0, 300)>
+        tax: <randomFloat(2, 0, 10)>
+        stock: <numberBetween(0, 100)>
+        company: '@company_*'
+
+    product_{11..20}:
+        name: '<word()>'
+        price: <randomFloat(2, 0, 300)>
+        tax: <randomFloat(2, 0, 10)>
+        stock: <numberBetween(0, 100)>
+        provider: '@provider_*'
+            

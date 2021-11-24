@@ -1,0 +1,8 @@
+# api/fixtures/employee.yaml
+App\Entity\Employee:
+    employee_{1..20}:
+        name: '<firstName()> <lastName()>'
+        birthday: <dateTimeBetween('-21 years', 'now')>
+        country: <sentence(1)>
+        firstDay: <dateTimeBetween('-7 years', 'now')>
+        company: '@company_*'

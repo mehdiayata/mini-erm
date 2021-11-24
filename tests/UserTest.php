@@ -3,10 +3,12 @@
 namespace App\Tests;
 
 use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\ApiTestCase;
+use App\DataFixtures\UserFixtures;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 
 class UserTest extends ApiTestCase
 {  
+
 
     // This trait provided by AliceBundle will take care of refreshing the database content to a known state before each test
     use RefreshDatabaseTrait;
