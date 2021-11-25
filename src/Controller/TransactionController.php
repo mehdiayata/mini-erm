@@ -15,30 +15,39 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class TransactionController extends AbstractController
 {
 
-    public function __construct()
+    public function __construct(private ProductRepository $productRepository)
     {
     }
 
     public function __invoke(Transaction $data, Request $request)
     {
+        // Vérifie si le produit est déjà dans une transaction
+        $getProductTransaction = $this->productRepository->findIfTransaction($data->getProduct()->getId());
+      
 
-        // Si le stock est à jour
-        if ($this->verifyStock($data->getProduct(), $data->getQuantity())) {
+        if ($getProductTransaction == false) {
+            // Si le stock est à jour
+            if ($this->verifyStock($data->getProduct(), $data->getQuantity())) {
 
-            // Si la transactione est entre le client et l'entreprise
-            if ($request->getUri() == 'http://127.0.0.1:8000/api/transactions/clients') {
-                $data = $this->postTransactionClient($data);
-            } else if ($request->getUri() == 'http://127.0.0.1:8000/api/transactions/providers') {
-                $data = $this->postTransactionProvider($data);
+                // Si la transactione est entre le client et l'entreprise
+                if ($request->getUri() == 'http://127.0.0.1:8000/api/transactions/clients') {
+                    $data = $this->postTransactionClient($data);
+                } else if ($request->getUri() == 'http://127.0.0.1:8000/api/transactions/providers') {
+                    $data = $this->postTransactionProvider($data);
+                }
+
+                $data->setProduct($this->updateStock($data->getProduct(), $data->getQuantity()));
+
+                return $data;
+            } else {
+                return throw new \Exception("This quantity of product is inferior as stock");
             }
-
-            $data->setProduct($this->updateStock($data->getProduct(), $data->getQuantity()));
-
-            return $data;
         } else {
-            throw new \Exception("This quantity of product is inferior as stock");
+            return throw new \Exception("The product is already sold");
         }
     }
+
+
 
     public function postTransactionProvider(Transaction $data)
     {

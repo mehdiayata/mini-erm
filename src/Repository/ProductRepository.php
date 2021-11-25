@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Product;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method Product|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,6 +18,23 @@ class ProductRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Product::class);
+    }
+
+    // Retourne true si le produit à déjà une transaction
+    public function findIfTransaction($id)
+    {
+        $query = $this->createQueryBuilder('p')
+            ->andWhere('p.id = :id')
+            ->innerJoin('p.transaction', 't', Join::WITH, 'p.transaction = t.id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult();
+
+        if (empty($query)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     // /**

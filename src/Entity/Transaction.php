@@ -23,7 +23,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'controller' => TransactionController::class,
             'read' => false,
             'security' => 'is_granted("PUBLIC_ACCESS")',
-            'denormalization_context' => ['groups' => 'write:Transaction:Provider']
+            'denormalization_context' => ['groups' => 'write:Transaction:Provider'],
+            'normalization_context' => ['groups' => 'read:Transaction:Provider'],
         ],
         'transaction_client' => [
             'path' => '/transactions/clients',
@@ -31,7 +32,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'controller' => TransactionController::class,
             'read' => false,
             'security' => 'is_granted("PUBLIC_ACCESS")',
-            'denormalization_context' => ['groups' => 'write:Transaction:Client']
+            'denormalization_context' => ['groups' => 'write:Transaction:Client'],
+            'normalization_context' => ['groups' => 'read:Transaction:Client'],
         ]
     ],
 )]
@@ -49,7 +51,7 @@ class Transaction
     /**
      * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="transactions")
      */
-    #[Groups(['write:Transaction:Client'])]
+    #[Groups(['write:Transaction:Client', 'read:Transaction:Client'])]
     private $client;
 
     /**
@@ -60,26 +62,26 @@ class Transaction
     /**
      * @ORM\OneToOne(targetEntity=Product::class, mappedBy="transaction", cascade={"persist", "remove"})
      */
-    #[Groups(['write:Transaction:Provider', 'write:Transaction:Client'])]
+    #[Groups(['write:Transaction:Provider', 'write:Transaction:Client', 'read:Transaction:Provider', 'read:Transaction:Client'])]
     private $product;
 
     /**
      * @ORM\ManyToOne(targetEntity=Company::class, inversedBy="transactions")
      */
-    #[Groups('write:Transaction:Provider')]
+    #[Groups(['write:Transaction:Provider', 'read:Transaction:Provider'])]
     private $company;
 
     /**
      * @ORM\ManyToOne(targetEntity=Employee::class, inversedBy="transactions")
      * @ORM\JoinColumn(nullable=false)
      */
-    #[Groups(['write:Transaction:Provider', 'write:Transaction:Client'])]
+    #[Groups(['write:Transaction:Provider', 'write:Transaction:Client', 'read:Transaction:Provider', 'read:Transaction:Client'])]
     private $employee;
 
     /**
      * @ORM\Column(type="integer")
      */
-    #[Groups(['write:Transaction:Provider', 'write:Transaction:Client'])]
+    #[Groups(['write:Transaction:Provider', 'write:Transaction:Client', 'read:Transaction:Provider', 'read:Transaction:Client'])]
     private $quantity;
 
     public function getId(): ?int
