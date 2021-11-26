@@ -36,6 +36,27 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'normalization_context' => ['groups' => 'read:Transaction:Client'],
         ]
     ],
+    itemOperations: [
+        'get',
+        'transaction_put_provider' => [
+            'path' => '/transactions/{id}/providers',
+            'method' => 'put',
+            'security' => 'is_granted("PUBLIC_ACCESS")',
+            'denormalization_context' => ['groups' => 'write:Transaction:Provider'],
+            'normalization_context' => ['groups' => 'read:Transaction:Provider'],
+            'read' => true
+        ],
+        'transaction_put_client' => [
+            'path' => '/transactions/{id}/clients',
+            'method' => 'put',
+            'security' => 'is_granted("PUBLIC_ACCESS")',
+            'denormalization_context' => ['groups' => 'write:Transaction:Client'],
+            'normalization_context' => ['groups' => 'read:Transaction:Client'],
+            
+        ],
+        'delete'
+    ]
+
 )]
 class Transaction
 {

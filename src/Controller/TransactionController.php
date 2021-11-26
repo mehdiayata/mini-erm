@@ -17,6 +17,7 @@ class TransactionController extends AbstractController
 
     public function __construct(private ProductRepository $productRepository)
     {
+        
     }
 
     public function __invoke(Transaction $data, Request $request)
@@ -96,4 +97,5 @@ class TransactionController extends AbstractController
 
         return $product;
     }
+
 }

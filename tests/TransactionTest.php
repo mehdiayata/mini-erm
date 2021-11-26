@@ -80,6 +80,7 @@ class TransactionTest extends ApiTestCase
             'quantity' => 5
         ]]);
 
+
         $this->assertResponseStatusCodeSame(201);
 
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
@@ -147,33 +148,102 @@ class TransactionTest extends ApiTestCase
         ]);
 
         $this->assertMatchesResourceItemJsonSchema(Transaction::class);
+    }
+
+    public function testIfProductIsSold(): void
+    {
+        $response = static::createClient()->request('POST', '/api/transactions/clients', ['json' => [
+            'product' => '/api/products/1',
+            'client' => '/api/clients/1',
+            'employee' => '/api/employees/1',
+            'quantity' => 27
+        ]]);
+
+        $this->assertResponseStatusCodeSame(500);
+
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+
+        $this->assertJsonContains([
+            '@context' => "/api/contexts/Error",
+            '@type' => "hydra:Error",
+            "hydra:title" => "An error occurred",
+            "hydra:description" => "The product is already sold"
+        ]);
+
+        $this->assertMatchesResourceItemJsonSchema(Transaction::class);
+    }
+
+    public function testDeleteTransaction(): void
+    {
+        $client = static::createClient();
+        $iri = $this->findIriBy(Transaction::class, ['id' => 1]);
+
+        $client->request('DELETE', $iri);
+
+        $this->assertResponseStatusCodeSame(204);
+        $this->assertNull(
+            // Through the container, you can access all your services from the tests, including the ORM, the mailer, remote API clients...
+            static::getContainer()->get('doctrine')->getRepository(Transaction::class)->findOneBy(['id' => 1])
+        );
+    }
+
+    public function testUpdateTransactionProvider(): void
+    {
+        $client = static::createClient();
+        $json = [
+            
+            'product' => '/api/products/10',
+            'company' => '/api/companies/4',
+            'employee' => '/api/employees/3',
+            'quantity' => 4
+        ];
+
+
+        $response = $client->request('PUT', '/api/transactions/7/providers', ['json' => $json]);
+        
+        $this->assertResponseIsSuccessful();
+
+        $this->assertJsonContains([
+            '@context' => '/api/contexts/Transaction',
+            '@id' => "/api/transactions/7",
+            '@type' => 'Transaction',
+            'product' => '/api/products/10',
+            'company' => '/api/companies/4',
+            'employee' => '/api/employees/3',
+            'quantity' => 4
+        ]);
+
+        $this->assertMatchesResourceItemJsonSchema(Transaction::class);
 
     }
 
-    public function testIfProductIsSold():void
-     {
-        {
-            $response = static::createClient()->request('POST', '/api/transactions/clients', ['json' => [
-                'product' => '/api/products/1',
-                'client' => '/api/clients/1',
-                'employee' => '/api/employees/1',
-                'quantity' => 27
-            ]]);
-    
-            $this->assertResponseStatusCodeSame(500);
-    
-            $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
-    
-    
-            $this->assertJsonContains([
-                '@context' => "/api/contexts/Error",
-                '@type' => "hydra:Error",
-                "hydra:title" => "An error occurred",
-                "hydra:description" => "The product is already sold"
-            ]);
-    
-            $this->assertMatchesResourceItemJsonSchema(Transaction::class);
-    
-        }
+    public function testUpdateTransactionClient(): void
+    {
+        $client = static::createClient();
+        $json = [
+            
+            'product' => '/api/products/10',        
+            'client' => '/api/clients/1',
+            'employee' => '/api/employees/3',
+            'quantity' => 4
+        ];
+
+        $response = $client->request('PUT', '/api/transactions/7/clients', ['json' => $json]);
+        
+        $this->assertResponseIsSuccessful();
+
+        $this->assertJsonContains([
+            '@context' => '/api/contexts/Transaction',
+            '@id' => "/api/transactions/7",
+            '@type' => 'Transaction',
+            'product' => '/api/products/10',
+            'client' => '/api/clients/1',
+            'employee' => '/api/employees/3',
+            'quantity' => 4
+        ]);
+
+        $this->assertMatchesResourceItemJsonSchema(Transaction::class);
+
     }
 }
