@@ -2,16 +2,20 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\CompanyRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CompanyRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=CompanyRepository::class)
  */
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => 'read:Company'],
+    denormalizationContext: ['groups' => 'write:Company']
+)]
 class Company
 {
     /**
@@ -19,36 +23,44 @@ class Company
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Groups('read:Company')]
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read:Company', 'write:Company'])]
     private $name;
 
     /**
      * @ORM\Column(type="decimal", precision=12, scale=2)
      */
+    
+    #[Groups(['read:Company', 'write:Company'])]
     private $balance;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read:Company', 'write:Company'])]
     private $country;
 
     /**
      * @ORM\OneToMany(targetEntity=Employee::class, mappedBy="company")
      */
+    #[Groups('read:Company')]
     private $employees;
 
     /**
      * @ORM\OneToMany(targetEntity=Product::class, mappedBy="company")
      */
+    #[Groups('read:Company')]
     private $products;
 
     /**
      * @ORM\OneToMany(targetEntity=Transaction::class, mappedBy="company")
      */
+    #[Groups('read:Company')]
     private $transactions;
 
     public function __construct()

@@ -2,16 +2,20 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\EmployeeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\EmployeeRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=EmployeeRepository::class)
  */
-#[ApiResource()]
+#[ApiResource(
+    normalizationContext: ['groups' => 'read:Employee'],
+    denormalizationContext: ['groups' => 'write:Employee']
+)]
 class Employee
 {
     /**
@@ -19,36 +23,43 @@ class Employee
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Groups('read:Employee')]
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read:Employee', 'write:Employee'])]
     private $name;
 
     /**
      * @ORM\Column(type="date")
      */
+    #[Groups(['read:Employee', 'write:Employee'])]
     private $birthday;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read:Employee', 'write:Employee'])]
     private $country;
 
     /**
      * @ORM\Column(type="date")
      */
+    #[Groups(['read:Employee', 'write:Employee'])]
     private $firstDay;
 
     /**
      * @ORM\ManyToOne(targetEntity=Company::class, inversedBy="employees")
      */
+    #[Groups(['read:Employee', 'write:Employee'])]
     private $company;
 
     /**
      * @ORM\OneToMany(targetEntity=Transaction::class, mappedBy="employee")
      */
+    #[Groups('read:Employee')]
     private $transactions;
 
     public function __construct()

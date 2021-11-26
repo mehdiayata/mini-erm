@@ -2,16 +2,20 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\ClientRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ClientRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=ClientRepository::class)
  */
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => 'read:Client'],
+    denormalizationContext: ['groups' => 'write:Client']
+)]
 class Client
 {
     /**
@@ -19,26 +23,31 @@ class Client
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Groups('read:Client')]
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read:Client', 'write:Client'])]
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read:Client', 'write:Client'])]
     private $adress;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read:Client', 'write:Client'])]
     private $country;
 
     /**
      * @ORM\OneToMany(targetEntity=Transaction::class, mappedBy="client")
      */
+    #[Groups('read:Client')]
     private $transactions;
 
     public function __construct()

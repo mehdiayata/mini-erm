@@ -7,11 +7,15 @@ use App\Repository\ProviderRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=ProviderRepository::class)
  */
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => 'read:Provider'],
+    denormalizationContext: ['groups' => 'write:Provider']
+)]
 class Provider
 {
     /**
@@ -19,31 +23,37 @@ class Provider
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Groups('read:Provider')]
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read:Provider', 'write:Provider'])]
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read:Provider', 'write:Provider'])]
     private $adress;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read:Provider', 'write:Provider'])]
     private $country;
 
     /**
      * @ORM\OneToMany(targetEntity=Product::class, mappedBy="provider")
      */
+    #[Groups('read:Provider')]
     private $products;
 
     /**
      * @ORM\OneToMany(targetEntity=Transaction::class, mappedBy="provider")
      */
+    #[Groups('read:Provider')]
     private $transactions;
 
     public function __construct()

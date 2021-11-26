@@ -2,14 +2,18 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ProductRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
  */
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => 'read:Product'],
+    denormalizationContext: ['groups' => 'write:Product']
+)]
 class Product
 {
     /**
@@ -17,41 +21,49 @@ class Product
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Groups('read:Product')]
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read:Product', 'write:Product'])]
     private $name;
 
     /**
      * @ORM\Column(type="decimal", precision=12, scale=2)
      */
+    #[Groups(['read:Product', 'write:Product'])]
     private $price;
 
     /**
      * @ORM\Column(type="decimal", precision=5, scale=2)
      */
+    #[Groups(['read:Product', 'write:Product'])]
     private $tax;
 
     /**
      * @ORM\Column(type="integer")
      */
+    #[Groups(['read:Product', 'write:Product'])]
     private $stock;
 
     /**
      * @ORM\ManyToOne(targetEntity=Provider::class, inversedBy="products")
      */
+    #[Groups(['read:Product', 'write:Product'])]
     private $provider;
 
     /**
      * @ORM\ManyToOne(targetEntity=Company::class, inversedBy="products")
      */
+    #[Groups(['read:Product', 'write:Product'])]
     private $company;
 
     /**
      * @ORM\OneToOne(targetEntity=Transaction::class, inversedBy="product", cascade={"persist", "remove"})
      */
+    #[Groups('read:Product')]
     private $transaction;
 
     public function getId(): ?int

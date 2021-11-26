@@ -238,7 +238,6 @@ class TransactionTest extends ApiTestCase
             '@id' => "/api/transactions/7",
             '@type' => 'Transaction',
             'product' => '/api/products/10',
-            'client' => '/api/clients/1',
             'employee' => '/api/employees/3',
             'quantity' => 4
         ]);
