@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     normalizationContext: ['groups' => 'read:Client'],
     denormalizationContext: ['groups' => 'write:Client']
+    
 )]
 class Client
 {
